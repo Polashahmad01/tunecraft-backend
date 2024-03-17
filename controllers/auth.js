@@ -5,6 +5,7 @@ import crypto from "crypto";
 
 import User from "../models/user.js";
 import { enableEnv } from "../utils/enableEnv.js";
+import { sendEmail } from "../utils/nodeMailer.js";
 
 enableEnv("/../.env");
 
@@ -83,7 +84,49 @@ const login = async (req, res, next) => {
   }
 }
 
+const forgotPassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+      const error = new Error("Validation failed entered data is incorrect");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { email } = req.body;
+    const user = await User.findOne({ email: email });
+    if(!user) {
+      const error = new Error(`Not found any account with ${email} address.`);
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenExpiration = Date.now() + 3600000;
+
+    user.resetToken = resetToken;
+    user.resetTokenExpiration = tokenExpiration;
+    await user.save();
+
+    const link = `${process.env.FRONT_END_BASE_URL}/reset-password/${resetToken}`;
+    const subject = 'Password reset';
+    const text = `You are receiving this because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it: ${link} If you did not request this, please ignore this email and your password will remain unchanged.`;
+
+    await sendEmail(email, subject, text);
+
+    res.status(200).json({ success: true, message: 'A password reset link has been sent to your email.', statusCode: 200 });
+  } catch(err) {
+    if(!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+}
+
 export default {
   register,
-  login
+  login,
+  forgotPassword
 }
