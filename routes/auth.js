@@ -7,5 +7,6 @@ import authRouteValidator from "../utils/authValidation.js";
 const router = express.Router();
 
 router.post("/v1/register", authRouteValidator.validateRegisterRoute(), authController.register);
+router.post("/v1/login", authRouteValidator.validateLoginRoute(), authController.login);
 
 export default router;
