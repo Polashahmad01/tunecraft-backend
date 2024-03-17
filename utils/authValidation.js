@@ -24,8 +24,16 @@ const validateForgotPasswordRoute = () => {
   ]
 }
 
+const validateResetPasswordRoute = () => {
+  return [
+    body('tokenId').trim().isLength({ min: 1 }).withMessage("Token id cannot be empty."),
+    body('password').trim().notEmpty().withMessage("Password cannot be empty.").isAlphanumeric().withMessage("Password should be alpha-numeric.").isLength({ min: 6 }).withMessage("Password should be at least 6 characters long.")
+  ]
+}
+
 export default {
   validateRegisterRoute,
   validateLoginRoute,
-  validateForgotPasswordRoute
+  validateForgotPasswordRoute,
+  validateResetPasswordRoute
 }

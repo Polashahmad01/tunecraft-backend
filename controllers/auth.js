@@ -125,8 +125,43 @@ const forgotPassword = async (req, res, next) => {
   }
 }
 
+const resetPassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+      const error = new Error("Validation failed entered data is incorrect");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { password, tokenId } = req.body;
+    const user = await User.findOne({ resetToken: tokenId, resetTokenExpiration: { $gt: Date.now() }});
+    if(!user) {
+      const error = new Error("Invalid or expired tokenId.");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpiration = undefined;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password has been updated.", statusCode: 200 });
+  } catch(err) {
+    if(!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+}
+
 export default {
   register,
   login,
-  forgotPassword
+  forgotPassword,
+  resetPassword
 }
