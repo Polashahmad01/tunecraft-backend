@@ -6,6 +6,7 @@ import cors from "cors";
 
 // Import files
 import connectToDataBase from "./config/db.js";
+import authRoutes from "./routes/auth.js";
 
 // Connect to Database
 connectToDataBase();
@@ -28,6 +29,8 @@ app.use(cors());
 app.get("/", (req, res, next) => {
   res.status(200).json({ success: true, statusCode: 200, message: "Welcome to TuneCraft. Let's generate some music.", });
 });
+
+app.use("/api", authRoutes);
 
 // Error handling middleware
 app.use((error, req, res, next) => {
