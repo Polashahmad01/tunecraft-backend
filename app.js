@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 
 // Logs middleware
-if(process.env.NODE_ENV = "development") {
+if(process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
@@ -37,7 +37,7 @@ app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
-  const data = error.data;
+  const data = error.data || [];
   res.status(status).json({ success: false, statusCode: status, message: message, data: data });
 });
 

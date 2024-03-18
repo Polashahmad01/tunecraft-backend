@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 import User from "../models/user.js";
 import { enableEnv } from "../utils/enableEnv.js";
-import { sendEmail } from "../utils/nodeMailer.js";
+import { sendEmail } from "../utils/email.js";
 
 enableEnv("/../.env");
 
