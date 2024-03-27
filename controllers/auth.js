@@ -84,6 +84,44 @@ const login = async (req, res, next) => {
   }
 }
 
+const socialLogin = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+      const error = new Error("Validation failed entered data is incorrect");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { fullName, email, emailVerified, profilePicture } = req.body;
+    const isUserExist = await User.findOne({ email: email });
+    if(isUserExist) {
+      const token = jwt.sign({ email: isUserExist.email, userId: isUserExist._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
+      return res.status(200).json({ success: true, message: 'User successfully logged in.', statusCode: 200, token: token, data: isUserExist });
+    }
+
+    const user = new User({
+      firstName: fullName.split(" ")[0],
+      lastName: fullName.split(" ")[1],
+      email: email,
+      emailVerified: emailVerified,
+      profilePicture: profilePicture
+    })
+
+    await user.save();
+
+    const token = jwt.sign({ email: user.email, userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
+    res.status(200).json({ success: true, message: 'User successfully logged in.', statusCode: 200, token: token, data: user });
+  } catch(err) {
+    if(!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+}
+
 const forgotPassword = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -162,6 +200,7 @@ const resetPassword = async (req, res, next) => {
 export default {
   register,
   login,
+  socialLogin,
   forgotPassword,
   resetPassword
 }
