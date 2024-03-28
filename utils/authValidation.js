@@ -39,10 +39,19 @@ const validateResetPasswordRoute = () => {
   ]
 }
 
+const validateRegisterSocialRoute = () => {
+  return [
+    body("fullName").trim().notEmpty().withMessage("Full name cannot be empty."),
+    body('email').trim().isEmail().withMessage("Invalid email address."),
+    body("emailVerified").isBoolean().withMessage("emailVerified should be a boolean value")
+  ]
+}
+
 export default {
   validateRegisterRoute,
   validateLoginRoute,
   validateLoginSocialRoute,
   validateForgotPasswordRoute,
-  validateResetPasswordRoute
+  validateResetPasswordRoute,
+  validateRegisterSocialRoute
 }
