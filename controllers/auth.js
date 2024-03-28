@@ -147,7 +147,7 @@ const forgotPassword = async (req, res, next) => {
     user.resetTokenExpiration = tokenExpiration;
     await user.save();
 
-    const link = `${process.env.FRONT_END_BASE_URL}/reset-password/${resetToken}`;
+    const link = `${process.env.FRONT_END_BASE_URL}/auth/reset-password/${resetToken}`;
     const subject = 'Password reset';
     const text = `You are receiving this because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it: ${link} If you did not request this, please ignore this email and your password will remain unchanged.`;
 
