@@ -21,7 +21,7 @@ const validateLoginRoute = () => {
 const validateLoginSocialRoute = () => {
   return [
     body("fullName").trim().notEmpty().withMessage("Full name cannot be empty."),
-    body("email").trim().notEmpty().withMessage("Email cannot be empty.").isEmail().withMessage("Not a valid email address.").normalizeEmail().withMessage("Invalid email address."),
+    body('email').trim().isEmail().withMessage("Invalid email address."),
     body("emailVerified").isBoolean().withMessage("emailVerified should be a boolean value")
   ]
 }
