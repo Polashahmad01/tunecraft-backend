@@ -47,6 +47,42 @@ const register = async (req, res, next) => {
   }
 }
 
+const socialRegister = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+      const error = new Error("Validation failed entered data is incorrect.");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { fullName, email, emailVerified, profilePicture } = req.body;
+    const isUserExist = await User.findOne({ email: email });
+    if(isUserExist) {
+      return res.status(201).json({ success: true, message: "User successfully created.", statusCode: 200, user: isUserExist });
+    }
+
+    const user = new User({
+      firstName: fullName.split(" ")[0],
+      lastName: fullName.split(" ")[1],
+      email: email,
+      emailVerified: emailVerified,
+      profilePicture: profilePicture
+    });
+
+    await user.save();
+
+    res.status(201).json({ success: true, message: "User successfully created.", statusCode: 201, user: user });
+  } catch(err) {
+    if(!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+}
+
 const login = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -202,5 +238,6 @@ export default {
   login,
   socialLogin,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  socialRegister
 }
