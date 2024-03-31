@@ -47,11 +47,18 @@ const validateRegisterSocialRoute = () => {
   ]
 }
 
+const validateLogoutRoute = () => {
+  return [
+    body("userId").trim().notEmpty().withMessage("User ID cannot be empty.")
+  ]
+}
+
 export default {
   validateRegisterRoute,
   validateLoginRoute,
   validateLoginSocialRoute,
   validateForgotPasswordRoute,
   validateResetPasswordRoute,
-  validateRegisterSocialRoute
+  validateRegisterSocialRoute,
+  validateLogoutRoute
 }

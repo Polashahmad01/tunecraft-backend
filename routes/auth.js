@@ -11,5 +11,6 @@ router.post("/v1/login", authRouteValidator.validateLoginRoute(), authController
 router.post("/v1/login/social", authRouteValidator.validateLoginSocialRoute(), authController.socialLogin);
 router.post("/v1/forgot-password", authRouteValidator.validateForgotPasswordRoute(), authController.forgotPassword);
 router.post("/v1/reset-password/:tokenId", authRouteValidator.validateResetPasswordRoute(), authController.resetPassword);
+router.post("/v1/logout", authRouteValidator.validateLogoutRoute(), authController.logOut);
 
 export default router;

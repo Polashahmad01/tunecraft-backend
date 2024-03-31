@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { ObjectId } from "mongoose";
 
 import User from "../models/user.js";
 import { enableEnv } from "../utils/enableEnv.js";
@@ -235,11 +236,40 @@ const resetPassword = async (req, res, next) => {
   }
 }
 
+const logOut = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+      const error = new Error("Validation failed entered data is incorrect");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { userId } = req.body;
+    const user = await User.findOne({ _id: new Object(userId) });
+    if(!user) {
+      const error = new Error("A user cannot be found.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    res.status(200).json({ success: true, message: 'User successfully logged out.', statusCode: 200, token: null });    
+  } catch(err) {
+    if(!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    next(err);
+  }
+}
+
 export default {
   register,
   login,
   socialLogin,
   forgotPassword,
   resetPassword,
-  socialRegister
+  socialRegister,
+  logOut
 }
