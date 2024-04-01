@@ -90,7 +90,7 @@ const login = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect.");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries.");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -99,21 +99,21 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if(!user) {
-      const error = new Error(`A user with ${email} could not be found.`);
+      const error = new Error(`The email, ${email}, is not associated with any existing account. Please check your input or try using a different email address.`);
       error.statusCode = 401;
       throw error;
     }
 
     const isPasswordEqual = await bcrypt.compare(password, user.password);
     if(!isPasswordEqual) {
-      const error = new Error("Wrong password. Please try again with the correct password.");
+      const error = new Error("Invalid password entered. Please retry with the correct password.");
       error.statusCode = 401;
       throw error;
     }
 
     const token = jwt.sign({ email: user.email, userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
 
-    res.status(200).json({ success: true, message: 'User successfully logged in.', statusCode: 200, token: token, data: user });
+    res.status(200).json({ success: true, message: "User authentication successful. Access granted.", statusCode: 200, token: token, data: user });
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;

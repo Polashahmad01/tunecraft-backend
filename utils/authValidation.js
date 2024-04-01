@@ -13,8 +13,10 @@ const validateRegisterRoute = () => {
 
 const validateLoginRoute = () => {
   return [
-    body('email').trim().isEmail().withMessage("Invalid email address."),
-    body("password").trim().notEmpty().withMessage("Password cannot be empty.").isAlphanumeric().withMessage("Password should be alpha-numeric.").isLength({ min: 6 }).withMessage("Password should be at list 6 characters long.")
+    body("email", "Invalid email address").trim().isEmail(),
+    body("password", "Password cannot be empty").trim().notEmpty(),
+    body("password", "Password should be alpha-numeric.").isAlphanumeric(),
+    body("password", "Password should be at list 6 characters long.").isLength({ min: 6 })
   ]
 }
 
