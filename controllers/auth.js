@@ -127,7 +127,7 @@ const socialLogin = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries.");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -137,7 +137,7 @@ const socialLogin = async (req, res, next) => {
     const isUserExist = await User.findOne({ email: email });
     if(isUserExist) {
       const token = jwt.sign({ email: isUserExist.email, userId: isUserExist._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
-      return res.status(200).json({ success: true, message: 'User successfully logged in.', statusCode: 200, token: token, data: isUserExist });
+      return res.status(200).json({ success: true, message: "User authentication successful. Access granted.", statusCode: 200, token: token, data: isUserExist });
     }
 
     const user = new User({
@@ -151,7 +151,7 @@ const socialLogin = async (req, res, next) => {
     await user.save();
 
     const token = jwt.sign({ email: user.email, userId: user._id }, process.env.JWT_SECRET, { expiresIn: "3h" });
-    res.status(200).json({ success: true, message: 'User successfully logged in.', statusCode: 200, token: token, data: user });
+    res.status(201).json({ success: true, message: "User authentication successful. Access granted.", statusCode: 201, token: token, data: user });
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;
