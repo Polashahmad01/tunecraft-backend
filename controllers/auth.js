@@ -165,7 +165,7 @@ const forgotPassword = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -174,12 +174,12 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     const user = await User.findOne({ email: email });
     if(!user) {
-      const error = new Error(`Not found any account with ${email} address.`);
+      const error = new Error(`The email, ${email}, is not associated with any existing account. Please check your input or try using a different email address.`);
       error.statusCode = 422;
       throw error;
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const tokenExpiration = Date.now() + 3600000;
 
     user.resetToken = resetToken;
@@ -187,12 +187,12 @@ const forgotPassword = async (req, res, next) => {
     await user.save();
 
     const link = `${process.env.FRONT_END_BASE_URL}/auth/reset-password/${resetToken}`;
-    const subject = 'Password reset';
+    const subject = "Password reset";
     const text = `You are receiving this because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it: ${link} If you did not request this, please ignore this email and your password will remain unchanged.`;
 
     await sendEmail(email, subject, text);
 
-    res.status(200).json({ success: true, message: 'A password reset link has been sent to your email.', statusCode: 200 });
+    res.status(200).json({ success: true, message: "A link to reset your password has been successfully dispatched to your registered email address.", statusCode: 200 });
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;

@@ -30,7 +30,7 @@ const validateLoginSocialRoute = () => {
 
 const validateForgotPasswordRoute = () => {
   return [
-    body('email').trim().isEmail().withMessage("Invalid email address.")
+    body("email", "Invalid email address").trim().isEmail()
   ]
 }
 
