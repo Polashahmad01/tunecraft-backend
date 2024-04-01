@@ -51,7 +51,7 @@ const validateRegisterSocialRoute = () => {
 
 const validateLogoutRoute = () => {
   return [
-    body("userId").trim().notEmpty().withMessage("User ID cannot be empty.")
+    body("userId", "User ID cannot be empty.").trim().notEmpty()
   ]
 }
 

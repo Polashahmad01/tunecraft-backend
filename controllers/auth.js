@@ -240,7 +240,7 @@ const logOut = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries.");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -249,12 +249,12 @@ const logOut = async (req, res, next) => {
     const { userId } = req.body;
     const user = await User.findOne({ _id: new Object(userId) });
     if(!user) {
-      const error = new Error("A user cannot be found.");
+      const error = new Error(`The id, ${userId}, is not associated with any existing account. Please check your input or try using a different userId.`);
       error.statusCode = 401;
       throw error;
     }
 
-    res.status(200).json({ success: true, message: 'User successfully logged out.', statusCode: 200, token: null });    
+    res.status(200).json({ success: true, message: "User has been successfully logged out.", statusCode: 200, token: null });    
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;
