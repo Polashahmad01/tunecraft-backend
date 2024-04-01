@@ -206,7 +206,7 @@ const resetPassword = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries.");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -215,7 +215,7 @@ const resetPassword = async (req, res, next) => {
     const { password, tokenId } = req.body;
     const user = await User.findOne({ resetToken: tokenId, resetTokenExpiration: { $gt: Date.now() }});
     if(!user) {
-      const error = new Error("Invalid or expired tokenId.");
+      const error = new Error("The token ID provided is either expired or invalid. Please enter a valid token ID or request a new one if needed.");
       error.statusCode = 422;
       throw error;
     }
@@ -226,7 +226,7 @@ const resetPassword = async (req, res, next) => {
     user.resetTokenExpiration = undefined;
     await user.save();
 
-    res.status(200).json({ success: true, message: "Password has been updated.", statusCode: 200 });
+    res.status(200).json({ success: true, message: "Your password has been successfully updated.", statusCode: 200 });
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;
