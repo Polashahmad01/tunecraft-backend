@@ -14,7 +14,7 @@ const register = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-      const error = new Error("Validation failed entered data is incorrect.");
+      const error = new Error("Unable to proceed. The information you entered is not valid. Please review and correct your entries.");
       error.statusCode = 422;
       error.data = errors.array();
       throw error;
@@ -23,7 +23,7 @@ const register = async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
     const isUserExist = await User.findOne({ email: email });
     if(isUserExist) {
-      const error = new Error("User already exists. Please try again with other email address.");
+      const error = new Error("The email address you have entered is already registered. Please use a different email to proceed.");
       error.statusCode = 422;
       throw error;
     }
@@ -38,7 +38,7 @@ const register = async (req, res, next) => {
 
     await user.save();
 
-    res.status(201).json({ success: true, message: "User successfully created.", statusCode: 201, user: user });
+    res.status(201).json({ success: true, message: "User creation successful. The account has been established accurately and securely.", statusCode: 201, user: user });
   } catch(err) {
     if(!err.statusCode) {
       err.statusCode = 500;
